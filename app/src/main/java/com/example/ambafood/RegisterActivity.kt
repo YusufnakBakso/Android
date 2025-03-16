@@ -23,7 +23,6 @@ class RegisterActivity : AppCompatActivity() {
             insets
         }
 
-        // Inisialisasi UI
         val emailEditText = findViewById<EditText>(R.id.emailEditText)
         val usernameEditText = findViewById<EditText>(R.id.usernameEditText)
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
@@ -31,7 +30,6 @@ class RegisterActivity : AppCompatActivity() {
         val registerButton = findViewById<Button>(R.id.loginButton)
         val loginLink = findViewById<TextView>(R.id.registerLink)
 
-        // Tombol Register
         registerButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val username = usernameEditText.text.toString()
@@ -39,14 +37,25 @@ class RegisterActivity : AppCompatActivity() {
             val nohp = nohpEditText.text.toString()
 
             if (email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty() && nohp.isNotEmpty()) {
-                Toast.makeText(this, "Registrasi Berhasil!", Toast.LENGTH_SHORT).show()
-                // Tambahkan logika untuk menyimpan data ke database jika diperlukan
+                // Simpan data ke SharedPreferences sebagai simulasi database
+                val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
+                with(sharedPref.edit()) {
+                    putString("EMAIL", email)
+                    putString("PASSWORD", password)
+                    apply()
+                }
+
+                Toast.makeText(this, "Registrasi Berhasil! Silakan login.", Toast.LENGTH_SHORT).show()
+
+                // Pindah ke halaman login
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
             } else {
                 Toast.makeText(this, "Harap isi semua kolom!", Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Link ke Halaman Login
         loginLink.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

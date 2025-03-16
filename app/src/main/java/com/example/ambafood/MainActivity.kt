@@ -8,7 +8,10 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.UnderlineSpan
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -26,20 +29,54 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Implementasi Underline dan ClickableSpan
+        val emailEditText = findViewById<EditText>(R.id.emailEditText)
+        val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
+        val loginButton = findViewById<Button>(R.id.loginButton)
         val registerLink = findViewById<TextView>(R.id.registerLink)
-        val text = "Don't have an account? Register"
 
+        // Cek apakah user sudah login sebelumnya
+        val sharedPref = getSharedPreferences("USER_DATA", MODE_PRIVATE)
+        val savedEmail = sharedPref.getString("EMAIL", null)
+        val savedPassword = sharedPref.getString("PASSWORD", null)
+
+        // Paksa agar login selalu muncul
+        val isLoggedIn = false  // Mengabaikan status login sebelumnya
+
+        if (isLoggedIn) {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+            finish() // Tutup MainActivity agar tidak bisa kembali
+        }
+
+        loginButton.setOnClickListener {
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
+            if (email == savedEmail && password == savedPassword) {
+                Toast.makeText(this, "Login Berhasil!", Toast.LENGTH_SHORT).show()
+
+                // Simpan status login
+                val editor = sharedPref.edit()
+                editor.putBoolean("IS_LOGGED_IN", true)
+                editor.apply()
+
+                // Navigasi ke HomeActivity
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+                finish() // Tutup MainActivity agar tidak bisa kembali
+            } else {
+                Toast.makeText(this, "Email atau Password salah!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Implementasi underline & klik pada "Register"
+        val text = "Don't have an account? Register"
         val spannable = SpannableString(text)
         val startIndex = text.indexOf("Register")
 
-        // Tambahkan underline pada kata "Register"
         spannable.setSpan(UnderlineSpan(), startIndex, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        // Jadikan "Register" bisa diklik
         spannable.setSpan(object : ClickableSpan() {
             override fun onClick(widget: View) {
-                // Pindah ke RegisterActivity
                 val intent = Intent(this@MainActivity, RegisterActivity::class.java)
                 startActivity(intent)
             }
